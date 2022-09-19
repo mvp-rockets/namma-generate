@@ -3,7 +3,9 @@
 - [3. Installation](#3-installation)
 - [4. Create the api project](#4-create-the-api-project)
 - [5. Start your project](#5-start-your-project)
-- [6. Authors/maintainers/contributors](#6-authorsmaintainerscontributors)
+- [6. connect to api container](#6-connect-to-api-container)
+- [7. misc operations inside container](#7-misc-operations-inside-container)
+- [7. Authors/maintainers/contributors](#7-authorsmaintainerscontributors)
 
 ## 1. Introduction
 
@@ -25,13 +27,27 @@ npm i -g @mvp-rockets/namma-generator
 ## 4. Create the api project
 
 ```
-namma_generate <project_name>
+namma_generate
 ```
 
 ## 5. Start your project
 
-`docker-compose up`
+```
+docker-compose up
+```
 
-## 6. Authors/maintainers/contributors
+## 6. connect to api container
+
+one time run
+`chmod +x connect.sh`
+
+now run
+`./connect.sh`
+
+## 7. misc operations inside container
+
+check: https://github.com/mvp-rockets/namma-generate/tree/master/namma-api-framework#readme
+
+## 7. Authors/maintainers/contributors
 
 - Yashjeet Luthra (yash@napses.com)
