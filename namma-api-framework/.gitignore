@@ -1,0 +1,15 @@
+node_modules/
+logs/
+coverage/
+.nyc_output/
+.arcade-single/
+.DS_Store
+src/.DS_Store
+db-backup
+env/.env
+.env
+env/.env.qa
+env/.env.uat
+env/.env.production
+nohup.out
+mockTrueDataServer_pid.txt

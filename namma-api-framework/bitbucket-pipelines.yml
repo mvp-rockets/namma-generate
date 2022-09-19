@@ -1,0 +1,23 @@
+image: node:16.16.0
+pipelines:
+  default:
+    - step:
+        name: test
+        caches:
+          - node
+        script:
+          - apt-get update
+          - apt-get install postgresql-client -y
+          - npm ci
+          - npm run db:create --env=ci
+          - npm run db:migrate --env=ci
+          - npm run test:ci
+        services:
+          - postgres
+definitions:
+  services:
+    postgres:
+      image: postgres:latest
+      variables:
+        POSTGRES_USER: "root"
+        POSTGRES_PASSWORD: "root"
