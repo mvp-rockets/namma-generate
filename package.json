@@ -1,13 +1,20 @@
 {
-  "name": "template",
+  "name": "@mvp-rockets/namma-generator",
   "version": "1.0.0",
-  "description": "",
+  "description": "A generator for generate mvp-rockets projects",
   "main": "index.js",
   "scripts": {
-    "start": "node index"
+    "start": ". ~/.nvm/nvm.sh && nvm use; nodemon index.js"
   },
-  "author": "",
-  "license": "ISC",
+  "engines": {
+    "node": "16.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mvp-rockets/namma-generate.git"
+  },
+  "author": "napses.com",
+  "license": "MIT",
   "dependencies": {
     "inquirer": "^9.1.1"
   },
