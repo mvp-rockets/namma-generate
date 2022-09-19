@@ -1,7 +1,7 @@
 {
   "name": "@mvp-rockets/namma-generator",
   "version": "1.0.0-beta.1",
-  "description": "A generator for generate mvp-rockets projects",
+  "description": "A generator to generate mvp-rockets projects",
   "main": "index.js",
   "scripts": {
     "start": ". ~/.nvm/nvm.sh && nvm use; nodemon index.js"
@@ -18,6 +18,15 @@
   "dependencies": {
     "inquirer": "^9.1.1"
   },
+  "keywords": [
+    "napses",
+    "mvp-rockets",
+    "express",
+    "@mvp-rockets/namma-lib",
+    "inquirer",
+    "node",
+    "postgres"
+  ],
   "type": "module",
   "bin": {
     "namma_generate": "./index.js"
