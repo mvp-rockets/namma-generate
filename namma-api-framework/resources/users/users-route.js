@@ -1,1 +1,0 @@
-require('resources/users/apis/get-users-api')
