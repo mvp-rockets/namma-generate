@@ -46,7 +46,7 @@ now run
 
 ## 7. misc operations inside container
 
-check: https://github.com/mvp-rockets/namma-generate/tree/master/namma-api-framework#readme
+check: https://github.com/mvp-rockets/backend-core/blob/master/README.md
 
 ## 7. Authors/maintainers/contributors
 
