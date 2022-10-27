@@ -16,7 +16,7 @@ const spinner = ora('Loading');
 
 //Welcome Message
 const log = console.log;
-log(chalk.red('Lets Begin'));
+log(chalk.blue('Lets Begin'));
 
 const projectTypeQuestion = [
     {
@@ -77,7 +77,7 @@ function updateVersion(projectName) {
             console.log(`Failed to update package version`)
             process.exit(1)
         }
-        spinner.stop();
+        spinner.succeed(chalk.green('All done, Happy coding!!!'))
     })
 }
 
@@ -115,9 +115,9 @@ function createUiProjectDirectoryContents(templatePath, newProjectPath, projectN
             const writePath = `${CURR_DIR}/${newProjectPath}/${file}`;
             let updateContent;
             if (file === 'package.json') {
-                updateContent = contents.split(/namma-frontend-framework/).join(projectName)
+                updateContent = contents.split(/namma-ui-framework/).join(projectName)
             } else {
-                updateContent = contents.split(/<namma-frontend-framework>/).join(projectName)
+                updateContent = contents.split(/<namma-ui-framework>/).join(projectName)
             }
             fs.writeFileSync(writePath, updateContent, 'utf8');
         } else if (stats.isDirectory()) {
