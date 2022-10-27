@@ -7,7 +7,7 @@ const CURR_DIR = process.cwd();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const templateProjectName = "namma-api-framework";
+const templateProjectName = "api-framework";
 const QUESTIONS = [
     {
         name: 'project-name',
