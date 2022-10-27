@@ -1,3 +1,6 @@
 [submodule "api-framework"]
 	path = api-framework
 	url = git@github.com:mvp-rockets/backend-core.git
+[submodule "frontend-framework"]
+	path = frontend-framework
+	url = git@github.com:mvp-rockets/frontend-nextjs-core.git
