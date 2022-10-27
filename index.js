@@ -6,8 +6,11 @@ import { fileURLToPath } from 'url';
 const CURR_DIR = process.cwd();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
+import ora from 'ora';
 const templateProjectName = "api-framework";
+const spinner = ora('Loading')
+spinner.color = 'yellow';
+spinner.text = 'Loading';
 const QUESTIONS = [
     {
         name: 'project-name',
@@ -21,6 +24,7 @@ const QUESTIONS = [
 ];
 
 inquirer.prompt(QUESTIONS).then(answers => {
+    spinner.start();
     const projectName = answers['project-name'];
     const templatePath = `${__dirname}/${templateProjectName}`;
     fs.mkdirSync(`${CURR_DIR}/${projectName}`);
@@ -32,7 +36,6 @@ function createDirectoryContents(templatePath, newProjectPath, projectName) {
 
     filesToCreate.forEach(file => {
         const origFilePath = `${templatePath}/${file}`;
-
         const stats = fs.statSync(origFilePath);
         if (stats.isFile()) {
             const contents = fs.readFileSync(origFilePath, 'utf8');
@@ -49,5 +52,6 @@ function createDirectoryContents(templatePath, newProjectPath, projectName) {
             createDirectoryContents(`${templatePath}/${file}`, `${newProjectPath}/${file}`, projectName);
         }
     });
+    spinner.stop();
 }
 

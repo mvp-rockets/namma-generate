@@ -16,7 +16,8 @@
   "author": "napses.com",
   "license": "MIT",
   "dependencies": {
-    "inquirer": "^9.1.1"
+    "inquirer": "^9.1.1",
+    "ora": "^6.1.2"
   },
   "keywords": [
     "napses",
