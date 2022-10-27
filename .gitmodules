@@ -1,0 +1,3 @@
+[submodule "api-framework"]
+	path = api-framework
+	url = git@github.com:mvp-rockets/backend-core.git
