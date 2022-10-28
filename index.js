@@ -10,11 +10,22 @@ import ora from 'ora';
 import * as subProcess from 'child_process'
 import chalk from 'chalk';
 
-const apiProjectTemplate = "api-framework";
-const uiProjectTemplate = "ui-framework"
-const deploymentScriptsTemplate = 'deployment_scripts'
-const spinner = ora('Loading');
+const templates = {
+    "api_project": {
+        name: 'api-framework',
+        readmeUrl: "https://github.com/mvp-rockets/backend-core/blob/master/README.md"
+    },
+    "ui_project": {
+        name: 'ui-framework',
+        readmeUrl: "https://github.com/mvp-rockets/frontend-nextjs-core/blob/master/README.md"
+    },
+    "deployment_scripts": {
+        name: 'deployment_scripts',
+        readmeUrl: "https://github.com/mvp-rockets/deployment_scripts/blob/master/README.md"
+    }
+};
 
+const spinner = ora('Loading');
 //Welcome Message
 const log = console.log;
 log(chalk.blue('Lets Begin'));
@@ -75,8 +86,8 @@ inquirer.prompt(projectTypeQuestion).then(projectTypeAnswer => {
         inquirer.prompt(projectNameQuestion).then(projectNameAnswer => {
             const projectName = projectNameAnswer['project_name']
             spinner.start();
-            const projectTemplateName = projectType === 'api_project' ? apiProjectTemplate : uiProjectTemplate;
-            const templatePath = `${__dirname}/${projectTemplateName}`;
+            const projectTemplate = templates[projectType];
+            const templatePath = `${__dirname}/${projectTemplate.name}`;
             fs.mkdirSync(`${CURR_DIR}/${projectName}`);
             if (projectType === 'api_project') {
                 createApiProjectDirectoryContents(templatePath, projectName, projectName)
@@ -84,20 +95,22 @@ inquirer.prompt(projectTypeQuestion).then(projectTypeAnswer => {
             else {
                 createUiProjectDirectoryContents(templatePath, projectName, projectName);
             }
-            updateVersion(projectName);
+            updateVersion(projectName, projectTemplate.readmeUrl);
         });
     } else {
         inquirer.prompt(deploymentScriptFolderNameQuestion).then(folderNameAnswer => {
             const folderName = folderNameAnswer['folder_name']
+            const projectTemplate = templates['deployment_scripts'];
             spinner.start();
-            const templatePath = `${__dirname}/${deploymentScriptsTemplate}`;
+            const templatePath = `${__dirname}/${projectTemplate.name}`;
             fs.mkdirSync(`${CURR_DIR}/${folderName}`);
             createDeploymentScriptsDirectoryContents(templatePath, folderName, folderName);
+            spinner.succeed(chalk.green(`All done, \nPlease follow ${projectTemplate.readmeUrl} to setup your deployment\nHappy coding!!!`))
         });
     }
 });
 
-function updateVersion(projectName) {
+function updateVersion(projectName, readmeUrl) {
     const writePath = `${CURR_DIR}/${projectName}/`;
     subProcess.exec(`cd ${writePath} && npm version 1.0.0 --no-git-tag-version --allow-same-version=true`, (err, stdout, stderr) => {
         if (err) {
@@ -105,7 +118,7 @@ function updateVersion(projectName) {
             console.log(`Failed to update package version`)
             process.exit(1)
         }
-        spinner.succeed(chalk.green('All done, Happy coding!!!'))
+        spinner.succeed(chalk.green(`All done, \nPlease follow ${readmeUrl} to start your application\nHappy coding!!!`))
     })
 }
 
@@ -171,7 +184,6 @@ function createDeploymentScriptsDirectoryContents(templatePath, newProjectPath, 
             createApiProjectDirectoryContents(`${templatePath}/${file}`, `${newProjectPath}/${file}`, projectName);
         }
     });
-    spinner.succeed(chalk.green('All done, Happy coding!!!'))
 }
 
 
