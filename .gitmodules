@@ -4,3 +4,6 @@
 [submodule "frontend-framework"]
 	path = ui-framework
 	url = git@github.com:mvp-rockets/frontend-nextjs-core.git
+[submodule "deployment_scripts"]
+	path = deployment_scripts
+	url = git@github.com:mvp-rockets/deployment_scripts.git
