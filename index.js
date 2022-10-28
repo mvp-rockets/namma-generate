@@ -12,6 +12,7 @@ import chalk from 'chalk';
 
 const apiProjectTemplate = "api-framework";
 const uiProjectTemplate = "ui-framework"
+const deploymentScriptsTemplate = 'deployment_scripts'
 const spinner = ora('Loading');
 
 //Welcome Message
@@ -33,6 +34,11 @@ const projectTypeQuestion = [
                 name: 'UI Project',
                 value: 'ui_project',
                 description: 'Mvp Rocket UI Project',
+            },
+            {
+                name: 'Deployment scripts',
+                value: 'deployment_scripts',
+                description: 'Mvp Rocket Deployment Scripts',
             }
         ]
     }
@@ -50,23 +56,45 @@ const projectNameQuestion = [
     }
 ];
 
+const deploymentScriptFolderNameQuestion = [
+    {
+        name: 'folder_name',
+        type: 'input',
+        message: 'Folder name:',
+        validate: function (input) {
+            if (/^([A-Za-z\-\_\d])+$/.test(input)) return true;
+            else return 'Folder name may only include letters, numbers, underscores and hashes.';
+        }
+    }
+];
+
+
 inquirer.prompt(projectTypeQuestion).then(projectTypeAnswer => {
     const projectType = projectTypeAnswer['projectType'];
-    inquirer.prompt(projectNameQuestion).then(projectNameAnswer => {
-        const projectName = projectNameAnswer['project_name']
-        spinner.start();
-        if (projectType === 'api_project') {
-            const templatePath = `${__dirname}/${apiProjectTemplate}`;
+    if (projectType === 'api_project' || projectType === 'ui_project') {
+        inquirer.prompt(projectNameQuestion).then(projectNameAnswer => {
+            const projectName = projectNameAnswer['project_name']
+            spinner.start();
+            const projectTemplateName = projectType === 'api_project' ? apiProjectTemplate : uiProjectTemplate;
+            const templatePath = `${__dirname}/${projectTemplateName}`;
             fs.mkdirSync(`${CURR_DIR}/${projectName}`);
-            createApiProjectDirectoryContents(templatePath, projectName, projectName, apiProjectTemplate);
-        }
-        if (projectType === 'ui_project') {
-            const templatePath = `${__dirname}/${uiProjectTemplate}`;
-            fs.mkdirSync(`${CURR_DIR}/${projectName}`);
-            createUiProjectDirectoryContents(templatePath, projectName, projectName);
-        }
-        updateVersion(projectName);
-    });
+            if (projectType === 'api_project') {
+                createApiProjectDirectoryContents(templatePath, projectName, projectName)
+            }
+            else {
+                createUiProjectDirectoryContents(templatePath, projectName, projectName);
+            }
+            updateVersion(projectName);
+        });
+    } else {
+        inquirer.prompt(deploymentScriptFolderNameQuestion).then(folderNameAnswer => {
+            const folderName = folderNameAnswer['folder_name']
+            spinner.start();
+            const templatePath = `${__dirname}/${deploymentScriptsTemplate}`;
+            fs.mkdirSync(`${CURR_DIR}/${folderName}`);
+            createDeploymentScriptsDirectoryContents(templatePath, folderName, folderName);
+        });
+    }
 });
 
 function updateVersion(projectName) {
@@ -100,6 +128,7 @@ function createApiProjectDirectoryContents(templatePath, newProjectPath, project
         } else if (stats.isDirectory()) {
             fs.mkdirSync(`${CURR_DIR}/${newProjectPath}/${file}`);
             createApiProjectDirectoryContents(`${templatePath}/${file}`, `${newProjectPath}/${file}`, projectName);
+
         }
     });
 }
@@ -126,4 +155,24 @@ function createUiProjectDirectoryContents(templatePath, newProjectPath, projectN
         }
     });
 }
+
+function createDeploymentScriptsDirectoryContents(templatePath, newProjectPath, projectName) {
+    const filesToCreate = fs.readdirSync(templatePath);
+
+    filesToCreate.forEach(file => {
+        const origFilePath = `${templatePath}/${file}`;
+        const stats = fs.statSync(origFilePath);
+        if (stats.isFile()) {
+            const contents = fs.readFileSync(origFilePath, 'utf8');
+            const writePath = `${CURR_DIR}/${newProjectPath}/${file}`;
+            fs.writeFileSync(writePath, contents, 'utf8');
+        } else if (stats.isDirectory()) {
+            fs.mkdirSync(`${CURR_DIR}/${newProjectPath}/${file}`);
+            createApiProjectDirectoryContents(`${templatePath}/${file}`, `${newProjectPath}/${file}`, projectName);
+        }
+    });
+    spinner.succeed(chalk.green('All done, Happy coding!!!'))
+}
+
+
 
