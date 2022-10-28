@@ -1,15 +1,12 @@
 - [1. Introduction](#1-introduction)
 - [2. Pre-requirement](#2-pre-requirement)
 - [3. Installation](#3-installation)
-- [4. Create the api project](#4-create-the-api-project)
-- [5. Start your project](#5-start-your-project)
-- [6. connect to api container](#6-connect-to-api-container)
-- [7. misc operations inside container](#7-misc-operations-inside-container)
-- [7. Authors/maintainers/contributors](#7-authorsmaintainerscontributors)
+- [4. Create the project/boilerplate codes.](#4-create-the-projectboilerplate-codes)
+- [5. Authors/maintainers/contributors](#5-authorsmaintainerscontributors)
 
 ## 1. Introduction
 
-A generator to generate mvp-rockets projects.
+A generator to generate mvp-rockets projects/boilerplate codes.
 
 ## 2. Pre-requirement
 
@@ -24,30 +21,12 @@ npm i -g @mvp-rockets/namma-generator
 
 ```
 
-## 4. Create the api project
+## 4. Create the project/boilerplate codes.
 
 ```
 namma_generate
 ```
 
-## 5. Start your project
-
-```
-docker-compose up
-```
-
-## 6. connect to api container
-
-one time run
-`chmod +x connect.sh`
-
-now run
-`./connect.sh`
-
-## 7. misc operations inside container
-
-check: https://github.com/mvp-rockets/backend-core/blob/master/README.md
-
-## 7. Authors/maintainers/contributors
+## 5. Authors/maintainers/contributors
 
 - Yashjeet Luthra (yash@napses.com)
