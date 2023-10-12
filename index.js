@@ -67,6 +67,26 @@ const projectNameQuestion = [
     }
 ];
 
+const projectCloudServiceQuestion = [
+    {
+        message: 'Which cloud service you want to use?',
+        type: 'list',
+        name: "projectCloudService",
+        choices: [
+            {
+                name: 'Amazon Web Services',
+                value: 'aws',
+                description: 'Mvp Rocket API project with aws',
+            },
+            {
+                name: 'Google Cloud Platform',
+                value: 'gcp',
+                description: 'Mvp Rocket API Project with gcp',
+            }
+        ]
+    }
+];
+
 const deploymentScriptFolderNameQuestion = [
     {
         name: 'folder_name',
@@ -85,17 +105,21 @@ inquirer.prompt(projectTypeQuestion).then(projectTypeAnswer => {
     if (projectType === 'api_project' || projectType === 'ui_project') {
         inquirer.prompt(projectNameQuestion).then(projectNameAnswer => {
             const projectName = projectNameAnswer['project_name']
-            spinner.start();
             const projectTemplate = templates[projectType];
             const templatePath = `${__dirname}/${projectTemplate.name}`;
             fs.mkdirSync(`${CURR_DIR}/${projectName}`);
             if (projectType === 'api_project') {
-                createApiProjectDirectoryContents(templatePath, projectName, projectName)
+                inquirer.prompt(projectCloudServiceQuestion).then(projectCloudServiceAnswer => {
+                    spinner.start();
+                    createApiProjectDirectoryContents(projectType, templatePath, projectName, projectName, projectCloudServiceAnswer.projectCloudService)
+                    updateVersion(projectName, projectTemplate.readmeUrl);
+                })
             }
             else {
+                spinner.start();
                 createUiProjectDirectoryContents(templatePath, projectName, projectName);
+                updateVersion(projectName, projectTemplate.readmeUrl);
             }
-            updateVersion(projectName, projectTemplate.readmeUrl);
         });
     } else {
         inquirer.prompt(deploymentScriptFolderNameQuestion).then(folderNameAnswer => {
@@ -122,16 +146,54 @@ function updateVersion(projectName, readmeUrl) {
     })
 }
 
-function createApiProjectDirectoryContents(templatePath, newProjectPath, projectName) {
+const apiFilesOrFolderNotToCreate = {
+    gcp: ['aws-config.js', 'gcp-config.js', 'gcp-env', 'aws-env', 'SQS',
+        'queues-scripts', 'elasticmq', 'aws', 'aws-initial_api_setup.sh', 'gcp-initial_api_setup.sh',
+        'aws-deploy-api.sh', 'gcp-deploy-api.sh'],
+    aws: ['aws-config.js', 'gcp-config.js', 'gcp-env', 'aws-env', 'PUBSUB',
+        'topics-scripts', 'gcp', 'gcp-initial_api_setup.sh', 'aws-initial_api_setup.sh',
+        'aws-deploy-api.sh', 'gcp-deploy-api.sh']
+}
+
+function createApiProjectDirectoryContents(projectType, templatePath, newProjectPath, projectName, projectCloudServiceAnswer = 'aws') {
     const filesToCreate = fs.readdirSync(templatePath);
 
     filesToCreate.forEach(file => {
         const origFilePath = `${templatePath}/${file}`;
         const stats = fs.statSync(origFilePath);
+        if (apiFilesOrFolderNotToCreate[projectCloudServiceAnswer]?.includes(file)) {
+            return;
+        }
         if (stats.isFile()) {
-            const contents = fs.readFileSync(origFilePath, 'utf8');
+            let contents = fs.readFileSync(origFilePath, 'utf8');
             const writePath = `${CURR_DIR}/${newProjectPath}/${file}`;
+            if (newProjectPath.split('/').pop() === 'env' && (projectType === 'api_project' || projectType === 'deployment_scripts')) {
+                const serviceEnvPath = templatePath.split('/');
+                serviceEnvPath[serviceEnvPath.length - 1] = `${projectCloudServiceAnswer}-${serviceEnvPath[serviceEnvPath.length - 1]}`
+                const envContents = fs.readFileSync(`${serviceEnvPath.join('/')}/${file}`, 'utf8')
+                contents += `\n${envContents}`;
+            }
             let updateContent;
+
+            if (file === 'config.js' && projectType === 'api_project') {
+                const envContents = fs.readFileSync(`${templatePath}/${projectCloudServiceAnswer}-config.js`, 'utf8');
+                contents = contents.split(/'serviceProviderConfig'/).join(envContents.split('serviceProvider =')[1])
+            }
+
+            if (file === 'initial_api_setup.sh' && projectType === 'deployment_scripts') {
+                const envContents = fs.readFileSync(`${templatePath}/${projectCloudServiceAnswer}-initial_api_setup.sh`, 'utf8')
+                contents = contents.split(/<exportingCredentials>/).join(envContents)
+            }
+            if (file === 'deploy-api.sh' && projectType === 'deployment_scripts') {
+                const envContents = fs.readFileSync(`${templatePath}/${projectCloudServiceAnswer}-deploy-api.sh, 'utf8'`)
+                contents = contents.split(/<runningInitialApiSetup>/).join(envContents)
+            }
+
+            if (file === 'build-env-index.js' && projectType === 'api_project') {
+                const envContents = fs.readFileSync(`${templatePath}/${projectCloudServiceAnswer}-build-env-index.js`, 'utf8')
+                contents += envContents
+            }
+
             if (file === 'package.json') {
                 updateContent = contents.split(/namma-api-framework/).join(projectName)
             } else {
@@ -140,7 +202,7 @@ function createApiProjectDirectoryContents(templatePath, newProjectPath, project
             fs.writeFileSync(writePath, updateContent, 'utf8');
         } else if (stats.isDirectory()) {
             fs.mkdirSync(`${CURR_DIR}/${newProjectPath}/${file}`);
-            createApiProjectDirectoryContents(`${templatePath}/${file}`, `${newProjectPath}/${file}`, projectName);
+            createApiProjectDirectoryContents(projectType, `${templatePath}/${file}`, `${newProjectPath}/${file}`, projectName, projectCloudServiceAnswer);
 
         }
     });
@@ -164,7 +226,7 @@ function createUiProjectDirectoryContents(templatePath, newProjectPath, projectN
             fs.writeFileSync(writePath, updateContent, 'utf8');
         } else if (stats.isDirectory()) {
             fs.mkdirSync(`${CURR_DIR}/${newProjectPath}/${file}`);
-            createApiProjectDirectoryContents(`${templatePath}/${file}`, `${newProjectPath}/${file}`, projectName);
+            createApiProjectDirectoryContents('ui_project', `${templatePath}/${file}`, `${newProjectPath}/${file}`, projectName);
         }
     });
 }
@@ -181,7 +243,7 @@ function createDeploymentScriptsDirectoryContents(templatePath, newProjectPath, 
             fs.writeFileSync(writePath, contents, 'utf8');
         } else if (stats.isDirectory()) {
             fs.mkdirSync(`${CURR_DIR}/${newProjectPath}/${file}`);
-            createApiProjectDirectoryContents(`${templatePath}/${file}`, `${newProjectPath}/${file}`, projectName);
+            createApiProjectDirectoryContents('deployment_scripts', `${templatePath}/${file}`, `${newProjectPath}/${file}`, projectName);
         }
     });
 }
