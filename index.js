@@ -149,10 +149,10 @@ function updateVersion(projectName, readmeUrl) {
 const apiFilesOrFolderNotToCreate = {
     gcp: ['aws-config.js', 'gcp-config.js', 'gcp-env', 'aws-env', 'SQS',
         'queues-scripts', 'elasticmq', 'aws', 'aws-initial_api_setup.sh', 'gcp-initial_api_setup.sh',
-        'aws-deploy-api.sh', 'gcp-deploy-api.sh'],
+        'aws-deploy-api.sh', 'gcp-deploy-api.sh', 'aws-api-routes.js', 'gcp-api-routes.js', 'aws-build-env-index.js', 'gcp-build-env-index.js'],
     aws: ['aws-config.js', 'gcp-config.js', 'gcp-env', 'aws-env', 'PUBSUB',
         'topics-scripts', 'gcp', 'gcp-initial_api_setup.sh', 'aws-initial_api_setup.sh',
-        'aws-deploy-api.sh', 'gcp-deploy-api.sh']
+        'aws-deploy-api.sh', 'gcp-deploy-api.sh', 'aws-api-routes.js', 'gcp-api-routes.js', 'aws-build-env-index.js', 'gcp-build-env-index.js']
 }
 
 function createApiProjectDirectoryContents(projectType, templatePath, newProjectPath, projectName, projectCloudServiceAnswer = 'aws') {
@@ -178,6 +178,11 @@ function createApiProjectDirectoryContents(projectType, templatePath, newProject
             if (file === 'config.js' && projectType === 'api_project') {
                 const envContents = fs.readFileSync(`${templatePath}/${projectCloudServiceAnswer}-config.js`, 'utf8');
                 contents = contents.split(/'serviceProviderConfig'/).join(envContents.split('serviceProvider =')[1])
+            }
+
+            if(file === 'api-routes.js' && projectType === 'api_project'){
+                const envContents = fs.readFileSync(`${templatePath}/${projectCloudServiceAnswer}-${file}`, 'utf8');
+                contents += `\n${envContents}`;
             }
 
             if (file === 'initial_api_setup.sh' && projectType === 'deployment_scripts') {
