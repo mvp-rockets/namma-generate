@@ -7,7 +7,8 @@
     "start": ". ~/.nvm/nvm.sh && nvm use; nodemon index.js"
   },
   "engines": {
-    "node": "16.x"
+    "node": ">=18 <21",
+    "npm": ">=9 <11"
   },
   "repository": {
     "type": "git",
