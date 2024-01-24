@@ -1,13 +1,14 @@
 {
   "name": "@mvp-rockets/namma-generator",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "description": "A generator to generate mvp-rockets projects",
   "main": "index.js",
   "scripts": {
     "start": ". ~/.nvm/nvm.sh && nvm use; nodemon index.js"
   },
   "engines": {
-    "node": "16.x"
+    "node": ">=18 <21",
+    "npm": ">=9 <11"
   },
   "repository": {
     "type": "git",
