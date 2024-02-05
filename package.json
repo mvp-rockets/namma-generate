@@ -1,6 +1,6 @@
 {
   "name": "@mvp-rockets/namma-generator",
-  "version": "6.2.0",
+  "version": "6.2.1",
   "description": "A generator to generate mvp-rockets projects",
   "main": "index.js",
   "scripts": {
