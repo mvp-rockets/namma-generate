@@ -1,0 +1,157 @@
+image: node:20.11.0
+
+definitions:
+  steps:
+    - step: &function-unit-test
+        name: Build project
+        condition:
+           changesets:
+             includePaths:
+                - "functions/**"
+                - "bitbucket-pipelines.yml"
+        caches:
+            - node
+        script:
+            - apt-get update
+            - apt-get install postgresql-client -y
+            - apt install graphviz -y
+            - cd functions
+            - npm ci
+            - npm run db:create --env=ci
+            - npm run db:migrate --env=ci
+            - npm run db:seed:all --env=ci
+            - npm run test:ci
+            - npm run coverage:bitbucket
+        artifacts:
+            - functions/coverage/**
+            - functions/*
+            - functions/mochawesome-report/**
+        services:
+            - postgres
+
+    - step: &functions-sonaqube-analysis
+         name: functions-sonaqube-analysis
+         clone:
+          depth: full
+         condition:
+            changesets:
+              includePaths:
+                 - "functions/**"
+                 - "bitbucket-pipelines.yml"
+         script:
+            - pipe: sonarsource/sonarqube-scan:1.2.0
+              variables:
+                SONAR_HOST_URL:   'https://sonar.napses.in'
+                SONAR_TOKEN:      $SONAR_TOKEN
+                EXTRA_ARGS: "-Dsonar.projectKey=bloom
+                -Dsonar.projectName=bloom
+                -Dsonar.projectVersion=1.0
+                -Dsonar.sourceEncoding=UTF-8
+                -Dsonar.sources=functions
+                -Dsonar.javascript.lcov.reportPaths=functions/coverage/lcov.info
+                -Dsonar.exclusions=**/test/**,**/migrations/**,**/notifications/**,**/lib/**,**/seeders/**,**/SQS/**,**/route.js,**/dependencies.html
+                -Dsonar.cpd.exclusions=**/test/**,**/migrations/**,**/notifications/**,**/lib/**,**/seeders/**,**/validators/**
+                -Dsonar.coverage.exclusions=**/test/**,**/migrations/**,**/notifications/**,**/lib/**,**/seeders/**,**/ui/**,**/db/**,**/models/**,**/index.js,**/route.js,**/utils/autoimport.js,**/build-env-index.js,**/SQS/**,**/queues-scripts/**,**/proxy/**,**/crons/**,**/cron-index.js,**/resources/default-api.js,**/resources/health-check-api.js,**/resources/health-check-db-api.js,**/resources/aws/**,**/config/**,**/passport/**,**/sequelize-explain-plugin.js,**/get-ips-by-target-group-index.js
+                -Dsonar.couplingPlugin.jsonReportPath=functions/dependencies.json
+                -Dsonar.couplingPlugin.htmlReportPath=functions/dependencies.html
+                -Dsonar.couplingPlugin.svgReportPath=functions/dependencies.svg "
+            - pipe: sonarsource/sonarqube-scan:2.0.0
+              variables:
+                SONAR_HOST_URL: "https://sonar.napses.in"
+                SONAR_TOKEN: $SONAR_TOKEN_UI
+                EXTRA_ARGS: "-Dsonar.projectKey=deon-ui
+                -Dsonar.projectName=deon-ui
+                -Dsonar.projectVersion=1.0
+                -Dsonar.sourceEncoding=UTF-8
+                -Dsonar.sources=ui"
+
+    - step: &deploy-codebuild
+        oidc: true
+        image: amazon/aws-cli
+        name: Deploy <app> to <ENV> ecs
+        script:
+            - export AWS_REGION=ap-south-1
+            - export AWS_ROLE_ARN=IAM_ROLE_ARN
+            - export AWS_WEB_IDENTITY_TOKEN_FILE=$(pwd)/web-identity-token
+            - echo $BITBUCKET_STEP_OIDC_TOKEN > $(pwd)/web-identity-token
+            - aws configure set web_identity_token_file ${AWS_WEB_IDENTITY_TOKEN_FILE}
+            - aws configure set role_arn ${AWS_ROLE_ARN}
+            - unset AWS_ACCESS_KEY_ID
+            - unset AWS_SECRET_ACCESS_KEY
+            - aws codebuild start-build --project-name ${CODEBUILD_NAME} --source-version=develop --buildspec-override=<app>_buildspec.yaml
+        trigger: manual
+        deployment: DEPLOYMENT_NAME
+
+        - step: &deployment-to-qa
+              name: deploy to qa
+              script:
+                - apt-get update && apt-get install -y rsync
+                - wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && source ~/.bashrc
+                - nvm use
+                - chmod 400 scripts/config/*.pem
+                - ./scripts/deploy.sh qa 
+
+  services:
+    docker:
+      memory : 2048
+    postgres:
+      image: postgres:latest
+      variables:
+        POSTGRES_USER: "root"
+        POSTGRES_PASSWORD: "root"
+    redis:
+      image: redis:6.2-alpine
+            
+pipelines:
+    pull-requests:
+      '**':
+        - step: *function-unit-test
+
+    default:
+        - step: *function-unit-test
+        - step: *functions-sonaqube-analysis
+
+    branches:
+              
+        release/uat:
+            - step: *function-unit-test
+            - step: *functions-sonaqube-analysis
+            - step:
+                  name: deploy to UAT
+                  deployment: UAT
+                  trigger: manual
+                  caches:
+                      - node
+                  script:
+                      - apt-get update
+                      - apt-get install -y awscli
+                      - apt-get install -y rsync
+                      - wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && source ~/.bashrc
+                      - nvm use
+                      - cd scripts
+                      - ./deploy.sh uat
+        develop:
+            - step: *function-unit-test
+            - parallel:
+                steps:
+                    - step: *deploy-codebuild
+                        trigger: manual
+                        deployment: qa-admin-ecs
+                    - step: *deploy-codebuild
+                        trigger: manual
+                        deployment: qa-payment-ecs
+        master:
+         - step: *function-unit-test
+         - step: *functions-sonaqube-analysis
+                    
+    custom:
+      deploy to env:
+            - step:
+                script:
+                    - echo "Do all test and lints here"
+                trigger: automatic
+            - parallel:
+                steps:
+                    - step: *deploy-codebuild
+                        deployment: staging-app
+                
