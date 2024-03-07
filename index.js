@@ -50,6 +50,11 @@ const projectTypeQuestion = [
                 name: 'Deployment scripts',
                 value: 'deployment_scripts',
                 description: 'Mvp Rocket Deployment Scripts',
+            },
+            {
+                name: 'Init Empty Project',
+                value: 'init_scripts',
+                description: 'MVP Rocket Base Project Directory',
             }
         ]
     }
@@ -102,7 +107,10 @@ const deploymentScriptFolderNameQuestion = [
 
 inquirer.prompt(projectTypeQuestion).then(projectTypeAnswer => {
     const projectType = projectTypeAnswer['projectType'];
-    if (projectType === 'api_project' || projectType === 'ui_project') {
+    if (projectType === 'init_scripts'){
+      createInitialFiles();
+    }
+    else if (projectType === 'api_project' || projectType === 'ui_project') {
         inquirer.prompt(projectNameQuestion).then(projectNameAnswer => {
             const projectName = projectNameAnswer['project_name']
             const projectTemplate = templates[projectType];
@@ -253,5 +261,21 @@ function createDeploymentScriptsDirectoryContents(templatePath, newProjectPath, 
     });
 }
 
+function createInitialFiles() {
+  const files = ['.gitignore', 'bitbucket-pipelines.yml', 'api_buildspec.yaml']; 
+  files.forEach((file) => {
+    if (fs.existsSync(file)) {
+        console.log(file, " file exists. Skipping");
+    } else {
+        let filePath =  `${__dirname}/${file}`;
+        fs.copyFile(filePath, file, err => {
+          if (err) throw err;
+        });
+    }  
+  });
 
-
+  console.log("Default files copied over");
+  if (!fs.existsSync('.git')) {
+    console.log("Don't forget to run 'git init' and 'git commit -a'");
+  }
+}
