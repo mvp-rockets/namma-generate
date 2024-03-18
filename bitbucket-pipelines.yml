@@ -39,31 +39,16 @@ definitions:
                  - "functions/**"
                  - "bitbucket-pipelines.yml"
          script:
-            - pipe: sonarsource/sonarqube-scan:1.2.0
+            - pipe: sonarsource/sonarqube-scan:2.0.0
               variables:
                 SONAR_HOST_URL:   'https://sonar.napses.in'
                 SONAR_TOKEN:      $SONAR_TOKEN
-                EXTRA_ARGS: "-Dsonar.projectKey=bloom
-                -Dsonar.projectName=bloom
-                -Dsonar.projectVersion=1.0
-                -Dsonar.sourceEncoding=UTF-8
-                -Dsonar.sources=functions
-                -Dsonar.javascript.lcov.reportPaths=functions/coverage/lcov.info
-                -Dsonar.exclusions=**/test/**,**/migrations/**,**/notifications/**,**/lib/**,**/seeders/**,**/SQS/**,**/route.js,**/dependencies.html
-                -Dsonar.cpd.exclusions=**/test/**,**/migrations/**,**/notifications/**,**/lib/**,**/seeders/**,**/validators/**
-                -Dsonar.coverage.exclusions=**/test/**,**/migrations/**,**/notifications/**,**/lib/**,**/seeders/**,**/ui/**,**/db/**,**/models/**,**/index.js,**/route.js,**/utils/autoimport.js,**/build-env-index.js,**/SQS/**,**/queues-scripts/**,**/proxy/**,**/crons/**,**/cron-index.js,**/resources/default-api.js,**/resources/health-check-api.js,**/resources/health-check-db-api.js,**/resources/aws/**,**/config/**,**/passport/**,**/sequelize-explain-plugin.js,**/get-ips-by-target-group-index.js
-                -Dsonar.couplingPlugin.jsonReportPath=functions/dependencies.json
-                -Dsonar.couplingPlugin.htmlReportPath=functions/dependencies.html
-                -Dsonar.couplingPlugin.svgReportPath=functions/dependencies.svg "
+                EXTRA_ARGS: "-Dproject.settings=api/sonar-project.properties"
             - pipe: sonarsource/sonarqube-scan:2.0.0
               variables:
                 SONAR_HOST_URL: "https://sonar.napses.in"
                 SONAR_TOKEN: $SONAR_TOKEN_UI
-                EXTRA_ARGS: "-Dsonar.projectKey=deon-ui
-                -Dsonar.projectName=deon-ui
-                -Dsonar.projectVersion=1.0
-                -Dsonar.sourceEncoding=UTF-8
-                -Dsonar.sources=ui"
+                EXTRA_ARGS: "-Dproject.settings=ui/sonar-project.properties"
 
     - step: &deploy-codebuild
         oidc: true
