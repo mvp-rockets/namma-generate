@@ -28,9 +28,11 @@ definitions:
             - functions/mochawesome-report/**
         services:
             - postgres
+            - redis
 
     - step: &functions-sonaqube-analysis
          name: functions-sonaqube-analysis
+         size: 1x
          clone:
           depth: full
          condition:
