@@ -1,8 +1,9 @@
 {
   "name": "@mvp-rockets/namma-generator",
-  "version": "6.2.3",
+  "version": "6.3.0",
   "description": "A generator to generate mvp-rockets projects",
   "main": "index.js",
+  "type": "commonjs",
   "scripts": {
     "start": ". ~/.nvm/nvm.sh && nvm use; nodemon index.js"
   },
@@ -16,10 +17,31 @@
   },
   "author": "napses.com",
   "license": "MIT",
+  "files": [
+    "generators"
+  ],
   "dependencies": {
-    "chalk": "^5.1.2",
+    "chalk": "^4.1.2",
+    "fix-esm": "^1.0.1",
     "inquirer": "^9.1.1",
-    "ora": "^6.1.2"
+    "ora": "^6.1.2",
+    "simple-git": "^3.24.0",
+    "yeoman-environment": "^v3.19.3",
+    "yeoman-generator": "^3.2.0",
+    "yosay": "^2.0.2"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.7",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.6.0",
+    "eslint-config-xo": "^0.27.2",
+    "eslint-plugin-prettier": "^3.1.1",
+    "husky": "^3.0.9",
+    "jest": "^26.1.0",
+    "lint-staged": "^9.4.3",
+    "prettier": "^1.19.1",
+    "yeoman-assert": "^3.1.1",
+    "yeoman-test": "^1.7.0"
   },
   "keywords": [
     "napses",
@@ -28,9 +50,9 @@
     "@mvp-rockets/namma-lib",
     "inquirer",
     "node",
-    "postgres"
+    "postgres",
+    "yeoman-generator"
   ],
-  "type": "module",
   "bin": {
     "namma_generate": "./index.js"
   }
