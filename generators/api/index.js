@@ -40,9 +40,21 @@ module.exports = class extends BaseGenerator {
   }
 
   writing() {
-    console.log("Destination: ", this.destinationRoot());
-    console.log("Source: ", this.sourceRoot());
-    console.log("ServiceName: ", this.answers.serviceName, this.answers);
+    const apiFilesOrFolderNotToCreate = {
+      gcp: ['aws-config.js', 'gcp-config.js', 'gcp-env', 'aws-env', 'SQS',
+          'queues-scripts', 'elasticmq', 'aws', 'aws-initial_api_setup.sh', 'gcp-initial_api_setup.sh',
+          'aws-deploy-api.sh', 'gcp-deploy-api.sh', 'aws-api-routes.js', 'gcp-api-routes.js', 'aws-build-env-index.js', 'gcp-build-env-index.js'],
+      aws: ['aws-config.js', 'gcp-config.js', 'gcp-env', 'aws-env', 'PUBSUB',
+          'topics-scripts', 'gcp', 'gcp-initial_api_setup.sh', 'aws-initial_api_setup.sh',
+          'aws-deploy-api.sh', 'gcp-deploy-api.sh', 'aws-api-routes.js', 'gcp-api-routes.js', 'aws-build-env-index.js', 'gcp-build-env-index.js']
+    };
+
+    this.copy(
+      '**',
+      this.answers.serviceName + "/",
+      { globOptions: { dot: true, ignore: ['.git', ...apiFilesOrFolderNotToCreate[this.answers.cloudProvider]] } }
+    );
+
   }
 
   install() {
