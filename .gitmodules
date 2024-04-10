@@ -1,9 +1,9 @@
 [submodule "api-framework"]
-	path = api-framework
+	path = generators/api/templates
 	url = git@github.com:mvp-rockets/backend-core.git
 [submodule "frontend-framework"]
-	path = ui-framework
+	path = generators/web/templates
 	url = git@github.com:mvp-rockets/frontend-nextjs-core.git
 [submodule "deployment_scripts"]
-	path = deployment_scripts
+	path = generators/scripts/templates
 	url = git@github.com:mvp-rockets/deployment_scripts.git

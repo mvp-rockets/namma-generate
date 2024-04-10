@@ -10,7 +10,10 @@ module.exports = class extends BaseGenerator {
   }
 
   writing() {
-    console.log("Destination: ", this.destinationRoot());
-    console.log("Source: ", this.sourceRoot());
+    this.copy(
+      '**', 
+      "scripts/", 
+      { globOptions: { dot: true, ignore: ['.git', 'gcp-env*'] } }
+    );
   }
 };

@@ -17,8 +17,6 @@ module.exports = class extends BaseGenerator {
   }
 
   writing() {
-    console.log("Destination: ", this.destinationRoot());
-    console.log("Source: ", this.sourceRoot());
   }
 
   conflicts() {
