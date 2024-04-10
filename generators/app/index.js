@@ -1,17 +1,8 @@
 'use strict';
-// import Generator from 'yeoman-generator';
-// import chalk from 'chalk';
-// import yosay from 'yosay';
-// import { fileURLToPath } from 'url';
-// import { dirname, join } from 'path';
 const BaseGenerator = require('../../lib/nammaBaseGenerator')
 const chalk = require("chalk");
 const fs = require("fs");
-const { validateNamespace } = require('../../lib/utils');
-
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = dirname(__filename);
-
+const { validateNamespace, getRepositoryUrl, optionalValidateUrl } = require('../../lib/utils');
 module.exports = class extends BaseGenerator {
   
   rootGeneratorName() {
@@ -69,6 +60,7 @@ module.exports = class extends BaseGenerator {
         },
       },      
     ];
+    
     if (this.nammaInfo.initProject) {
       prompts[1].choices.push(
         {
@@ -80,6 +72,16 @@ module.exports = class extends BaseGenerator {
           name: 'Project Init Files',
           checked: true,
           value: 'init'
+        },
+      );
+
+      prompts.push(
+        {
+          type: 'input',
+          name: 'repoUrl',
+          message: 'What is the project git repository url?',
+          validate: optionalValidateUrl,
+          default: getRepositoryUrl(this.appname)
         },
       );
     }
@@ -121,30 +123,26 @@ module.exports = class extends BaseGenerator {
         { nammaInfo: this.nammaInfo }
       );  
     }
+
+    if (this.nammaInfo.initProject) {
+      let files = ['.editorconfig', '.gitignore', '.nvmrc', 'bitbucket-pipelines.yml', 'api_buildspec.yaml'];
+      files.forEach((file, i) => {
+        this.copy(
+          "init/" + file,
+          file
+        );
+      });
+    }
   }
 
   writing() {
-    // this.fs.copyTpl(
-    //   this.templatePath('dummyfile.txt'),
-    //   this.destinationPath('dummyfile.txt'),
-    //   { title: 'Templating with Yeoman' }
-    // );
   }
   
   conflicts() {
 
   }
-
-  // path() {
-  //   console.log("Destination: ", this.destinationRoot());
-  //   console.log(this.destinationPath("script/example-file.txt"));
-  //   console.log("Context root", this.contextRoot);
-  //   console.log("Source: ", this.sourceRoot());
-  //   console.log("Path", this.templatePath('index.js'));
-  // }
   
   install() {
-    //this.installDependencies();
     console.log("Install");
   }
 
@@ -152,11 +150,3 @@ module.exports = class extends BaseGenerator {
     console.log("Cleanup");
   }
 };
-
-// See code e.g.
-// https://github.com/danger/generator-danger-plugin/blob/master/src/app/index.js
-// https://github.com/yeoman/generator-generator/blob/main/app/index.js
-// https://github.com/yeoman/generator-node
-// https://github.com/yeoman/generator-node/blob/main/generators/app/index.js
-// https://github.com/onebeyond/generator-systemic/blob/master/generators/app/index.js
-// https://github.com/Samuel-Martineau/generator-svelte/blob/master/generators/app/index.js

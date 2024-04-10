@@ -17,7 +17,7 @@ module.exports = class extends BaseGenerator {
         default: "api" 
       },
       {
-        type: 'rawlist',
+        type: 'list',
         name: 'cloudProvider',
         message: 'Which cloud provider are we deploying it to?',
         validate(answer) {
@@ -44,4 +44,13 @@ module.exports = class extends BaseGenerator {
     console.log("Source: ", this.sourceRoot());
     console.log("ServiceName: ", this.answers.serviceName, this.answers);
   }
+
+  install() {
+    console.log("API Install");
+  }
+
+  end() {
+    console.log("API Cleanup");
+  }
+
 };
