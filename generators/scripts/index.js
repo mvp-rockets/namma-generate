@@ -13,7 +13,7 @@ module.exports = class extends BaseGenerator {
     this.copy(
       '**', 
       "scripts/", 
-      { globOptions: { dot: true, ignore: ['.git', 'gcp-env*'] } }
+      { globOptions: { dot: true, ignore: ['**/\.git', '**/gcp-env/*', '**/golden-key*'] } }
     );
   }
 };
