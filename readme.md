@@ -2,6 +2,7 @@
 - [2. Pre-requirement](#2-pre-requirement)
 - [3. Installation](#3-installation)
 - [4. Create the project/boilerplate codes.](#4-create-the-projectboilerplate-codes)
+- [5. Development](#5-development)
 
 ## 1. Introduction
 
@@ -43,3 +44,14 @@ Service Name:
 
 In case of API, additional prompt "Cloud Provider" is asked for.
 - Currently we have only published the AWS version.
+
+## 5. Development
+
+This project uses git submodule.
+First time cloning:
+`git clone --recurse-submodules -j4`
+Else, after cloning, you will need to run the following for the first time.
+`git submodule update --init --recursive`
+
+Whenever you want to update the submodules, run
+`git submodule update --recursive`

@@ -41,8 +41,5 @@ module.exports = class extends BaseGenerator {
   }
 
   writing() {
-    console.log("Destination: ", this.destinationRoot());
-    console.log("Source: ", this.sourceRoot());
-    console.log("ServiceName: ", this.answers.serviceName, this.answers);
   }
 };
