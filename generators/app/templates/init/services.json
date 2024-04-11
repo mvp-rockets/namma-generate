@@ -1,0 +1,5 @@
+{
+  "Documentation": "This json is used for managing the environments & services that are available in this project. The scripts/deploy.sh is dependent on this file",
+  "projectName": "",
+  "services": []
+}

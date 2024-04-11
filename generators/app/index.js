@@ -22,7 +22,7 @@ module.exports = class extends BaseGenerator {
 
   async prompting() {
     // Have Yeoman greet the user.
-    this.greet(`Welcome to the ${chalk.hex('#FFA500').underline('mvprockets')} ${chalk.red('namma')} generator!`);
+    this.greet(`Hi ${chalk.hex('#FFA500').bold(this.user.git.name())}! Welcome to the ${chalk.hex('#FFA500').underline('mvprockets')} ${chalk.red('namma')} generator!`);
 
     const prompts = [
       {
@@ -86,7 +86,7 @@ module.exports = class extends BaseGenerator {
       );
     }
 
-    if (!this.destinationExists("infra")) {
+    if (!this.targetExists("infra")) {
       prompts[1].choices.push(
         {
           name: 'Terraform Infrastructure Code',
@@ -96,7 +96,7 @@ module.exports = class extends BaseGenerator {
       );  
     }
 
-    if (!this.destinationExists("performance")) {
+    if (!this.targetExists("performance")) {
       prompts[1].choices.push(
         {
           name: 'K6 Performance Scripts',
@@ -125,13 +125,17 @@ module.exports = class extends BaseGenerator {
     }
 
     if (this.nammaInfo.initProject) {
-      let files = ['.editorconfig', '.gitignore', '.nvmrc', 'bitbucket-pipelines.yml', 'api_buildspec.yaml'];
+      let files = ['.editorconfig', '.gitignore', '.nvmrc', 'bitbucket-pipelines.yml', 'api_buildspec.yaml', 'services.json'];
       files.forEach((file, i) => {
         this.copy(
           "init/" + file,
           file
         );
       });
+
+      let services = this.readDestinationJSON('services.json');
+      services.projectName = this.answers.projectName;
+      this.writeJSON('services.json', services);
     }
   }
 
@@ -143,10 +147,12 @@ module.exports = class extends BaseGenerator {
   }
   
   install() {
-    console.log("Install");
   }
 
-  end() {
-    console.log("Cleanup");
+  async end() {
+    if (!this.nammaInfo.isRepo || !this.targetExists(".git")) {
+      this.log("No git repo found. Initializing git repository")
+      await this.initGit();
+    }
   }
 };
