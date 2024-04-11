@@ -25,7 +25,7 @@ module.exports = class extends BaseGenerator {
     this.copy(
       '**',
       this.answers.serviceName + "/",
-      { globOptions: { dot: true, ignore: ['.git'] } }
+      { globOptions: { dot: true, ignore: ['**/\.git'] } }
     );
   }
 };
