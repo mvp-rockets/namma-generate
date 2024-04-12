@@ -32,7 +32,7 @@ module.exports = class extends BaseGenerator {
     let pkgJson = this.readTemplateJSON('package.json');
     pkgJson.name = `${this.options.nammaInfo.projectName}-${this.answers.serviceName}`;
     pkgJson.version = "1.0.0";
-    this.writeJSON(`${this.answers.serviceName}/package.json`, pkgJson);
+    this.writeJSON(`${this.answers.serviceName}/package.json`, pkgJson, null, 4);
 
     // Update services.json
     let service = {"type": "web", "name": this.answers.serviceName, "sub_services": []}
