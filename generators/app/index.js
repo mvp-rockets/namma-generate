@@ -136,6 +136,8 @@ module.exports = class extends BaseGenerator {
       let services = this.readDestinationJSON('services.json');
       services.projectName = this.answers.projectName;
       this.writeJSON('services.json', services);
+
+      this.copy('generators', '', {globOptions: {dot: true}});
     }
   }
 
