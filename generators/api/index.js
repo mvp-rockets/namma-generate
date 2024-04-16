@@ -41,7 +41,7 @@ module.exports = class extends BaseGenerator {
 
   writing() {
     const ignoreList = {
-      common: ['**/\.git', '**/*.ejs', '**/gcp-env/*', '**/aws-env/*',
+      common: ['**/\.git', '**/gitignore', '**/*.ejs', '**/gcp-env/*', '**/aws-env/*',
         '**/aws-config.js', '**/gcp-config.js',
         '**/aws-api-routes.js', '**/gcp-api-routes.js',
         '**/aws-build-env-index.js', '**/gcp-build-env-index.js'
@@ -98,6 +98,8 @@ module.exports = class extends BaseGenerator {
       service.sub_services = ["cron", "sqs"];
     }
     this.saveServicesJson(service);
+
+    this.copy('gitignore', this.answers.serviceName + '/.gitignore');
   }
 
   async install() {

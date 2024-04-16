@@ -25,8 +25,10 @@ module.exports = class extends BaseGenerator {
     this.copy(
       '**',
       this.answers.serviceName + "/",
-      { globOptions: { dot: true, ignore: ['**/\.git'] } }
+      { globOptions: { dot: true, ignore: ['**/\.git', '**/gitignore'] } }
     );
+
+    this.copy('gitignore', this.answers.serviceName + '/.gitignore');
 
     // Update package.json
     let pkgJson = this.readTemplateJSON('package.json');

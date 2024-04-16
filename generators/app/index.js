@@ -125,7 +125,7 @@ module.exports = class extends BaseGenerator {
     }
 
     if (this.nammaInfo.initProject) {
-      let files = ['.editorconfig', '.gitignore', '.nvmrc', 'bitbucket-pipelines.yml', 'api_buildspec.yaml', 'services.json'];
+      let files = ['.editorconfig', '.nvmrc', 'bitbucket-pipelines.yml', 'api_buildspec.yaml', 'services.json'];
       files.forEach((file, i) => {
         this.copy(
           "init/" + file,
@@ -137,6 +137,7 @@ module.exports = class extends BaseGenerator {
       services.projectName = this.answers.projectName;
       this.writeJSON('services.json', services);
 
+      this.copy('init/gitignore', '.gitignore');
       this.copy('generators', '', {globOptions: {dot: true}});
     }
   }
