@@ -51,6 +51,7 @@ definitions:
                 SONAR_HOST_URL: "https://sonar.napses.in"
                 SONAR_TOKEN: $SONAR_TOKEN_UI
                 EXTRA_ARGS: "-Dproject.settings=ui/sonar-project.properties"
+                SONAR_SCANNER_OPTS: -Xmx1024m
 
     - step: &deploy-codebuild
         oidc: true
