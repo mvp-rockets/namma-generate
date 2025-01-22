@@ -45,9 +45,6 @@ Thumbs.db
 *.mov
 *.wmv
 
-**/.next/
-**/audit.json
-
 **/node_modules/
 
 # PWA files
@@ -151,6 +148,9 @@ web_modules/
 # Next.js build output
 .next
 out
+**/.next/
+**/audit.json
+**/.swc/
 
 # Nuxt.js build / generate output
 .nuxt
