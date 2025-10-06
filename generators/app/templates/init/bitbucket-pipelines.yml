@@ -21,7 +21,7 @@ definitions:
             - npm run db:migrate --env=ci
             - npm run db:seed:all --env=ci
             - npm run test:ci
-            - npm run coverage:bitbucket
+            - npm run coverage:ci
         artifacts:
             - functions/coverage/**
             - functions/*
@@ -77,7 +77,7 @@ definitions:
                 - wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && source ~/.bashrc
                 - nvm use
                 - chmod 400 scripts/config/*.pem
-                - ./scripts/deploy.sh qa 
+                - ./scripts/deploy.sh qa
 
   services:
     docker:
@@ -89,7 +89,7 @@ definitions:
         POSTGRES_PASSWORD: "root"
     redis:
       image: redis:6.2-alpine
-            
+
 pipelines:
     pull-requests:
       '**':
@@ -100,7 +100,7 @@ pipelines:
         - step: *functions-sonaqube-analysis
 
     branches:
-              
+
         release/uat:
             - step: *function-unit-test
             - step: *functions-sonaqube-analysis
@@ -131,7 +131,7 @@ pipelines:
         master:
          - step: *function-unit-test
          - step: *functions-sonaqube-analysis
-                    
+
     custom:
       deploy to env:
             - step:
@@ -142,4 +142,4 @@ pipelines:
                 steps:
                     - step: *deploy-codebuild
                         deployment: staging-app
-                
+
